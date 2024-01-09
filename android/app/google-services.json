@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "423324466011",
+    "project_id": "f-society-de242",
+    "storage_bucket": "f-society-de242.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423324466011:android:6b1bb8204c04e88f61787e",
+        "android_client_info": {
+          "package_name": "com.example.fsociety"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWJPhDMDQY_Wbdb4a77pYPuwc46Ni5CvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
