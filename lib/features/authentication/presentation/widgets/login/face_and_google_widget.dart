@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
-class FaceAndGoogleWidget extends StatelessWidget {
+import 'package:fsociety/features/authentication/cubit/login_cubit/login_cubit.dart';
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
+class FaceAndGoogleWidget extends StatelessWidget {
   const FaceAndGoogleWidget({super.key});
 
   @override
@@ -9,27 +11,26 @@ class FaceAndGoogleWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CircleAvatar(
-          backgroundColor: Colors.redAccent,
-          radius: 20,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/images/google.png'),
-          ),
-        ),
-        SizedBox(width: 20),
-        InkWell(
-          onTap: (){},
-          child: CircleAvatar(
-            backgroundColor: Colors.blueAccent,
-            radius: 20,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset('assets/images/facebook.png'),
-            ),
-          ),
-        ),
+        buildItem(
+            icon: BootstrapIcons.google,
+            iconSize: 20,
+            fun: () => di.sl<LoginCubit>().googleSignIn(), backColor: Colors.redAccent),
+        const SizedBox(width: 20),
+        buildItem(icon: BootstrapIcons.facebook, iconSize: 22, fun: () =>di.sl<LoginCubit>().facebookSignIn(), backColor: Colors.blue),
       ],
     );
   }
+
+  buildItem(
+          {required IconData icon,
+          required double iconSize,
+          required Function() fun ,
+          required backColor}) =>
+      Container(
+          decoration: BoxDecoration(
+              color: backColor, borderRadius: BorderRadius.circular(50)),
+          child: Center(
+              child: IconButton(
+                  onPressed: fun,
+                  icon: Icon(icon, color: Colors.white, size: iconSize))));
 }

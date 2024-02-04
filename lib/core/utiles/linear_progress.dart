@@ -1,18 +1,15 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LinearProgressWidget extends StatefulWidget {
 
-  final fun ;
-  LinearProgressWidget({super.key,required this.fun});
+  const LinearProgressWidget({super.key});
 
   @override
-  State<LinearProgressWidget> createState() => _LinearProgreesWidgetState();
+  State<LinearProgressWidget> createState() => _LinearProgressWidgetState();
 }
 
-class _LinearProgreesWidgetState extends State<LinearProgressWidget> {
+class _LinearProgressWidgetState extends State<LinearProgressWidget> {
 
 
   double _progressValue = 0.0;
@@ -25,7 +22,9 @@ class _LinearProgreesWidgetState extends State<LinearProgressWidget> {
           _progressValue += 0.01;
         } else {
           timer.cancel();
-          widget.fun;
+          setState(() {
+            Navigator.pop(context);
+          });
         }
       });
     });
@@ -36,14 +35,17 @@ class _LinearProgreesWidgetState extends State<LinearProgressWidget> {
     super.initState();
     _startLoading();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child:LinearProgressIndicator(
-        value: _progressValue,
-        backgroundColor: Colors.grey,
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-      ),
+    return LinearProgressIndicator(
+      value: _progressValue,
+      backgroundColor: Colors.grey,
+      valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
     );
   }
 }

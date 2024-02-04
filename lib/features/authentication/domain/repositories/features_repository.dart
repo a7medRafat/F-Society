@@ -13,6 +13,10 @@ abstract class AuthRepository {
     required String password,
   });
 
+  Future<Either<Failure, UserCredential>> googleSignIn();
+
+  Future<Either<Failure, UserCredential>> facebookSignIn();
+
   Future<Either<Failure, CurrentUser>> getCurrentUser({required String uid});
 
   Future<Either<Failure, void>> addUserToFireStore({required CurrentUser currentUser});

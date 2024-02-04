@@ -7,7 +7,7 @@ class GalleryViewer {
       builder: (context) {
         return Center(
             child: Container(
-          height: MediaQuery.of(context).size.height / 2,
+          height: MediaQuery.of(context).size.height / 1.5,
           width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.all(20),
           decoration: BoxDecoration(

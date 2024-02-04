@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fsociety/features/addpost/cubit/create_post_cubit.dart';
-import '../../../../core/utiles/app_colors.dart';
+import '../../../../config/style/app_colors.dart';
 
 class CreatePostWidget extends StatelessWidget {
   final ImageProvider img;
@@ -38,7 +38,6 @@ class CreatePostWidget extends StatelessWidget {
                       size: 15,
                     ),
                   ))),
-
         ],
       ),
     );

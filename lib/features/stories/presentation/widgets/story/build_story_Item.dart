@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import '../../../../../core/utiles/app_colors.dart';
+import '../../../../../config/style/app_colors.dart';
 
 class BuildStoryItem extends StatelessWidget {
   const BuildStoryItem({super.key, required this.index, required this.img});

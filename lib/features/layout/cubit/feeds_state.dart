@@ -27,7 +27,11 @@ class GetAllPostsSuccessState extends FeedsState {}
 
 class PostLikeLoadingState extends FeedsState {}
 
-class PostLikeErrorState extends FeedsState {}
+class PostLikeErrorState extends FeedsState {
+  final String error;
+
+  PostLikeErrorState({required this.error});
+}
 
 class PostLikeSuccessState extends FeedsState {}
 
@@ -75,7 +79,9 @@ class DeletePostSuccessState extends FeedsState {}
 
 class DeletePostErrorState extends FeedsState {}
 
+class MyLikeIncreaseState extends FeedsState {}
 
+class MyLikeDecreaseState extends FeedsState {}
 
 
 

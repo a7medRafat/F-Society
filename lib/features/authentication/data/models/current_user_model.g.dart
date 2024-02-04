@@ -25,6 +25,7 @@ class CurrentUserAdapter extends TypeAdapter<CurrentUser> {
       isEmailVerified: fields[7] as bool?,
       image: fields[5] as String?,
       bio: fields[6] as String?,
+      deviceToken: fields[8] as String?,
     );
   }
 

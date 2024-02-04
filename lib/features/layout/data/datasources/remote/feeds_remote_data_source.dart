@@ -1,9 +1,8 @@
-import 'dart:io';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fsociety/core/firebase/storage/storage.dart';
 import 'package:fsociety/features/layout/data/models/comment_model.dart';
-import 'package:fsociety/features/stories/data/models/story_model.dart';
 
 import '../../../../../core/firebase/firebase_store/firebase_firestore.dart';
 
@@ -28,6 +27,8 @@ abstract class FeedsRemoteDataSource {
 
   Future<QuerySnapshot<Map<String, dynamic>>> getComments(String postsId);
    Future<void> deletePost(String postId);
+
+
 
 
 }
@@ -97,6 +98,7 @@ class FeedsRemoteDataSourceImpl implements FeedsRemoteDataSource {
   Future<DocumentSnapshot<Map<String, dynamic>>> checkSaved(String postId)async {
     return await storageByFirebase.checkSaved(postId);
   }
+
 
 
 }

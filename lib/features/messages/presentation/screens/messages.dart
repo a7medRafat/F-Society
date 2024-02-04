@@ -1,78 +1,82 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fsociety/features/layout/presentation/screens/App_Layout.dart';
-import '../../../../core/navigation/navigation.dart';
-import '../../../../core/utiles/loading_widget.dart';
-import '../../cubit/messages_cubit.dart';
-import '../widgets/message_item.dart';
-import '../widgets/message_txt_widget.dart';
-import '../widgets/messsages_background.dart';
-import '../widgets/search_widget.dart';
+import 'package:fsociety/core/local_storage/hive_keys.dart';
+import 'package:fsociety/core/local_storage/user_storage.dart';
+import 'package:fsociety/core/utiles/app_bar.dart';
+import 'package:fsociety/features/messages/presentation/widgets/message/static_search_widhet.dart';
+import 'package:fsociety/app/injuctoin_container.dart' as di;
+import 'package:fsociety/features/messages/presentation/widgets/message/message_item.dart';
+import '../../data/models/last_message_model.dart';
+import '../widgets/message/message_txt_widget.dart';
+import '../widgets/message/messsages_background.dart';
 
 class Messages extends StatelessWidget {
-  const Messages({super.key});
+  Messages({super.key});
+
+  final Stream<QuerySnapshot> chatStream = FirebaseFirestore.instance
+      .collection('users')
+      .doc(di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid)
+      .collection('chats')
+      .snapshots();
 
   @override
   Widget build(BuildContext context) {
     return MessageBackground(
       child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: _appBar(context),
-          body: ListView(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const MessageTextWidget(),
-                    const SizedBox(height: 30),
-                    BlocConsumer<MessagesCubit, MessagesState>(
-                      listener: (context, state) {},
-                      builder: (context, state) {
-                        if (state is GetAllUsersLoadingState) {
-                          return LoadingWidget();
-                        } else {
-                          return Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                SearchWidget(),
-                                const SizedBox(height: 20),
-                                ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, index) => MessageItem(
-                                    message: 'hallow',
-                                    model:
-                                        MessagesCubit.get(context).users[index],
-                                  ),
-                                  itemCount:
-                                      MessagesCubit.get(context).users.length,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      },
-                    )
-                  ],
-                ),
+        backgroundColor: Colors.transparent,
+        appBar: MyAppBar().appBar(context: context),
+        body: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const MessageTextWidget(),
+                  const SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        const StaticSearchWidget(),
+                        const SizedBox(height: 20),
+                        StreamBuilder(
+                          stream: chatStream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
+                            if (snapshot.hasError) {
+                              return const Text('Something went wrong');
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Text("Loading");
+                            }
+                            return ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  var data = snapshot.data!.docs[index];
+                                  LastMsgModel last = LastMsgModel(
+                                      name: data['name'],
+                                      image: data['image'],
+                                      lastMessage: data['lastMessage'],
+                                      receiverId: data['receiverId']);
+                                  return MessageItem(
+                                    model: last,
+                                  );
+                                },
+                                itemCount: snapshot.data!.docs.length);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          )),
+            ),
+          ],
+        ),
+      ),
     );
   }
-
-  _appBar(context) => AppBar(
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-            onPressed: () {
-              Navigation().navigateTo(context, AppLayout());
-            },
-            icon: Icon(Icons.arrow_back)),
-      );
 }

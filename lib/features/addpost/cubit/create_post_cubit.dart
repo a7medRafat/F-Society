@@ -4,12 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fsociety/core/failures_message/failures_messages.dart';
 import 'package:fsociety/core/local_storage/hive_keys.dart';
 import 'package:fsociety/core/local_storage/user_storage.dart';
+import 'package:fsociety/core/shared_preferances/cache_helper.dart';
 import 'package:fsociety/features/addpost/domain/usecases/create_post_img.dart';
 import 'package:fsociety/features/addpost/domain/usecases/upload_post_img.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import '../../layout/cubit/feeds_cubit.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 import 'package:intl/intl.dart';
 import '../data/models/post_model.dart';
 
@@ -34,11 +35,11 @@ class CreatePostCubit extends Cubit<CreatePostState> {
                   .name!,
               dateTime: DateFormat('kk:mm:a').format(DateTime.now()).toString(),
               uid: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid,
-              image:
-              di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.image!);
+              bio: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.bio,
+              image: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.image!,
+              deviceToken: CacheHelper.getData(key: 'DEVICE_TOKEN'));
 
           createPostImg(postModel: postModel);
-          di.sl<FeedsCubit>().getAllPosts();
           emit(UploadPostImgSuccessState());
         });
   }
@@ -50,6 +51,7 @@ class CreatePostCubit extends Cubit<CreatePostState> {
           (failure) =>
           emit(CreatePostErrorState(errorMsg: failureMessage(failure))),
           (success) {
+            di.sl<FeedsCubit>().getAllPosts();
         emit(CreatePostSuccessState());
       },
     );

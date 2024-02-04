@@ -1,15 +1,10 @@
 // ignore_for_file: void_checks
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fsociety/core/utiles/loading_widget.dart';
 import 'package:fsociety/features/authentication/cubit/login_cubit/login_cubit.dart';
 import 'package:fsociety/features/authentication/cubit/login_cubit/login_state.dart';
 import 'package:fsociety/features/layout/presentation/screens/App_Layout.dart';
-import 'package:fsociety/features/layout/presentation/screens/feeds_screen.dart';
-import '../../../../../core/local_storage/hive_keys.dart';
-import '../../../../../core/local_storage/user_storage.dart';
 import '../../../../../core/mysnackbar/mysnackbar.dart';
 import '../../../../../core/navigation/navigation.dart';
 import '../../../../../core/utiles/app_button.dart';
@@ -19,7 +14,7 @@ import '../../widgets/login/login_input_widget.dart';
 import '../../widgets/login/login_text_widget.dart';
 import '../../widgets/login/or_divider_widget.dart';
 import '../../widgets/login/register_now_widget.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -35,7 +30,7 @@ class LoginScreen extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: CustomScrollView(
               slivers: [
                 SliverFillRemaining(
@@ -56,7 +51,13 @@ class LoginScreen extends StatelessWidget {
                         listener: (context, state) {
                           if (state is LoginSuccessState) {
                             MySnackBar().snackBarMessage(context, state.successMsg);
-                            Navigation().navigateAndFinish(context, AppLayout());
+                            Navigation().navigateAndFinish(context, const AppLayout());
+                          }
+                          if (state is GoogleSigningSuccessState) {
+                            Navigation().navigateAndFinish(context, const AppLayout());
+                          }
+                          if (state is FaceBookSigningSuccessState) {
+                            Navigation().navigateAndFinish(context, const AppLayout());
                           }
                           else if (state is LoginErrorState) {
                             return MySnackBar()
@@ -65,13 +66,13 @@ class LoginScreen extends StatelessWidget {
                         },
                         builder: (context, state) {
                           if (state is LoginLoadingState) {
-                            return LoadingWidget();
+                            return const LoadingWidget();
                           }
                           return AppButton(
                               text: 'Login',
                               fun: () {
                                 if (loginKey.currentState!.validate()) {
-                                   di.sl<LoginCubit>().userLogin(
+                                  di.sl<LoginCubit>().userLogin(
                                       email: emailController.text,
                                       password: passwordController.text);
                                 }
@@ -80,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const RegisterNowWidget(),
                       const OrDivider(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       const FaceAndGoogleWidget()
                     ],
                   ),

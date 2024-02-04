@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fsociety/core/firebase/firebase_auth/auth.dart';
 import 'package:fsociety/core/firebase/firebase_store/firebase_firestore.dart';
-
 import '../models/current_user_model.dart';
 import '../models/register_model.dart';
 
@@ -10,6 +9,9 @@ abstract class AuthRemoteDataSource {
 
   Future<UserCredential> userLogin(
       {required String email, required String password});
+
+  Future<UserCredential> googleSignIn();
+  Future<UserCredential> facebookSignIn();
 
   Future<void> addUserToFireStore({required CurrentUser currentUser});
 
@@ -47,5 +49,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       {required RegisterBody registerBody}) async {
     return await authByFirebase.createUserWithEmailAndPass(
         registerBody: registerBody);
+  }
+
+  @override
+  Future<UserCredential> googleSignIn()async {
+    return await authByFirebase.googleSignIn();
+  }
+
+  @override
+  Future<UserCredential> facebookSignIn() async{
+    return await authByFirebase.facebookSignIn();
   }
 }

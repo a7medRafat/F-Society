@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fsociety/features/stories/data/models/story_model.dart';
-import '../../../../../core/const/const.dart';
 import 'package:intl/intl.dart';
+import 'package:fsociety/app/injuctoin_container.dart' as di;
+
+import '../../../../../core/local_storage/hive_keys.dart';
+import '../../../../../core/local_storage/user_storage.dart';
 
 class StoryViewHeaderWidget extends StatelessWidget {
 
@@ -15,7 +17,7 @@ class StoryViewHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(15.0),
       child: Row(
         children: [
           Row(
@@ -24,7 +26,7 @@ class StoryViewHeaderWidget extends StatelessWidget {
                 backgroundImage: NetworkImage(storyModel.image!),
                 radius: 20,
               ),
-              SizedBox(width: 15),
+              const SizedBox(width: 15),
               Text(
                 storyModel.name!,
                 style: Theme.of(context)
@@ -32,7 +34,7 @@ class StoryViewHeaderWidget extends StatelessWidget {
                     .titleSmall!
                     .copyWith(color: Colors.white),
               ),
-              SizedBox(width: 15),
+              const SizedBox(width: 15),
               // TimeAgoWidget(timestamp: FeedsCubit.get(context).validStories[index].date!),
               Text(DateFormat('kk:mm:a').format(DateTime.parse(storyModel.date!)).toString()
 

@@ -9,6 +9,7 @@ class GridWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StaggeredGrid.count(
+
       crossAxisCount: 2,
       mainAxisSpacing: 14.0,
       crossAxisSpacing: 14.0,

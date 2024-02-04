@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fsociety/core/local_storage/hive_keys.dart';
 import 'package:fsociety/core/local_storage/user_storage.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class AddStoryHeaderWidget extends StatelessWidget {
   const AddStoryHeaderWidget({
@@ -12,7 +12,7 @@ class AddStoryHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(15.0),
       child: Row(
         children: [
           Row(
@@ -30,7 +30,7 @@ class AddStoryHeaderWidget extends StatelessWidget {
                     .titleSmall!
                     .copyWith(color: Colors.white),
               ),
-              SizedBox(width: 15),
+              const SizedBox(width: 15),
               // TimeAgoWidget(timestamp: FeedsCubit.get(context).validStories[index].date!),
               Text(
                 'now',

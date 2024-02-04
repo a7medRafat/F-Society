@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/local_storage/hive_keys.dart';
 import '../../../../../core/local_storage/user_storage.dart';
-import '../../../../../core/utiles/app_colors.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import '../../../../../config/style/app_colors.dart';
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class NameAndBioWidget extends StatelessWidget {
   const NameAndBioWidget({super.key,});
@@ -18,7 +18,7 @@ class NameAndBioWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: 5),
           Text(
-              '@ ${di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.bio}',
+              '@${di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.bio}',
               style: Theme.of(context)
                   .textTheme
                   .bodySmall!

@@ -9,6 +9,7 @@ import '../data/models/story_model.dart';
 import '../domain/usecases/create_story_img.dart';
 import '../domain/usecases/get_all_stories.dart';
 import '../domain/usecases/upload_story_img.dart';
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 part 'story_state.dart';
 
@@ -43,9 +44,9 @@ class StoryCubit extends Cubit<StoryState> {
         (downloadUrl) {
       StoryModel storyModel = StoryModel(
           storyImage: downloadUrl,
-          image: UserStorage().getData(id: HiveKeys.currentUser)!.image,
-          userId: UserStorage().getData(id: HiveKeys.currentUser)!.uid,
-          name: UserStorage().getData(id: HiveKeys.currentUser)!.name,
+          image: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.image,
+          userId: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid,
+          name: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.name,
           date: DateTime.now().toString(),
           expiryDate: expiryDate.toString());
       createStoryImg(storyModel: storyModel);
@@ -59,8 +60,8 @@ class StoryCubit extends Cubit<StoryState> {
     failureOrCreate.fold(
       (failure) =>
           emit(CreateStoryImgErrorState(errorMsg: failureMessage(failure))),
-      (success) {
-        getAllStories();
+      (success) async{
+        await getAllStories();
         emit(CreateStoryImgSuccessState());
       },
     );
@@ -69,10 +70,9 @@ class StoryCubit extends Cubit<StoryState> {
   List<StoryModel> validStories = [];
   List<StoryModel> invalidStories = [];
 
-  void getAllStories() async {
+  Future<void> getAllStories() async {
     validStories = [];
     invalidStories = [];
-    emit(GetAllStoriesLoadingState());
     final failureOrStories = await getAllStoriesUseCase.call();
     failureOrStories.fold((failure) => emit(GetAllStoriesErrorState()),
         (stories) {
@@ -83,8 +83,10 @@ class StoryCubit extends Cubit<StoryState> {
         } else {
           invalidStories.add(StoryModel.fromJson(e.data()));
         }
-        emit(GetAllStoriesSuccessState());
       }
+      print('valllid===? ${validStories.length}');
+      emit(GetAllStoriesSuccessState());
     });
   }
+
 }

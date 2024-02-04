@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/local_storage/hive_keys.dart';
 import '../../../../../core/local_storage/user_storage.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class StoryHeaderWidget extends StatelessWidget {
   final int index;

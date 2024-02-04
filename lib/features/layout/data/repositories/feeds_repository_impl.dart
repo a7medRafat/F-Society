@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fsociety/core/errors/exceptions.dart';
 import 'package:fsociety/core/errors/failures.dart';
 import 'package:fsociety/features/authentication/data/models/current_user_model.dart';
@@ -30,7 +31,7 @@ class FeedsRepositoryImpl extends FeedsRepository {
         feedsLocalDataSource.cachesData(response);
         return right(response);
       } on FirebaseException catch (e) {
-        print(e.toString());
+        print(e.code);
         return left(ServerFailure());
       }
     } else {
@@ -44,15 +45,13 @@ class FeedsRepositoryImpl extends FeedsRepository {
   }
 
   @override
-  Future<Either<Failure, QuerySnapshot<Map<String, dynamic>>>>
-      getAllPosts() async {
+  Future<Either<Failure, QuerySnapshot<Map<String, dynamic>>>> getAllPosts() async {
     if (await networkInfo.isConnected) {
       try {
         final response = await feedsRemoteDataSource.getAllPosts();
-        // feedsLocalDataSource.cachesPosts(posts);
         return right(response);
       } on FirebaseException catch (e) {
-        return left(ServerFailure());
+        return left(MyServerFailure(error: e));
       }
     } else {
       return left(OfflineFailure());
@@ -194,4 +193,7 @@ class FeedsRepositoryImpl extends FeedsRepository {
       return left(ServerFailure());
     }
   }
+
+
+
 }

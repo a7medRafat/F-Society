@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fsociety/features/messages/data/models/get_all_users.dart';
-import '../profile_img.dart';
+import 'package:fsociety/features/messages/data/models/last_message_model.dart';
+import '../message/profile_img.dart';
 
 class MessageDetailHeader extends StatelessWidget {
-  final GetAllUsersModel model;
-  const MessageDetailHeader({super.key, required this.model});
+  final LastMsgModel model;
+
+
+  const MessageDetailHeader({super.key, required this.model,});
 
   @override
   Widget build(BuildContext context) {

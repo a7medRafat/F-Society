@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fsociety/core/utiles/loading_widget.dart';
-
 class LoadingDialog extends StatelessWidget {
 
 
@@ -15,18 +13,20 @@ class LoadingDialog extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.black54,
             borderRadius: BorderRadius.circular(8),
           ),
-          child:  Column(
+          child:Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-               SizedBox(
-                height: 30,
-                  width: 30,
-                  child: LoadingWidget()),
-              const SizedBox(height: 16),
-              Text(text,style: Theme.of(context).textTheme.titleSmall),
+               const SizedBox(
+                height: 15,
+                  width: 15,
+                  child: CircularProgressIndicator(color: Colors.white,)),
+              const SizedBox(width: 10),
+              Text(text,style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                color: Colors.white
+              )),
             ],
           ),
         ),

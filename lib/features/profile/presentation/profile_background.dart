@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import '../../../core/utiles/app_colors.dart';
+import '../../../config/style/app_colors.dart';
 
 class ProfileBackground extends StatelessWidget {
   const ProfileBackground({Key? key, required this.child}) : super(key: key);

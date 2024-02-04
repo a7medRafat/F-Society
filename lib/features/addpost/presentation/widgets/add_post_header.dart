@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/local_storage/hive_keys.dart';
 import '../../../../core/local_storage/user_storage.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class AddPostHeader extends StatelessWidget {
   const AddPostHeader({super.key});

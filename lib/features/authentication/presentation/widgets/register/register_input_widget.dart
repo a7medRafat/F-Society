@@ -33,7 +33,7 @@ class _RegisterInputWidgetState extends State<RegisterInputWidget> {
           DefaultField(
             controller: widget.c1,
             hint: 'user name',
-            prefixIcon: Icon(IconBroken.User),
+            prefixIcon: const Icon(IconBroken.User),
             isPassword: false,
             textInputType: TextInputType.name,
             validation: (value) {
@@ -45,13 +45,10 @@ class _RegisterInputWidgetState extends State<RegisterInputWidget> {
           DefaultField(
             controller: widget.c2,
             hint: 'email',
-            prefixIcon: Icon(IconBroken.Message),
+            prefixIcon: const Icon(IconBroken.Message),
             isPassword: false,
             textInputType: TextInputType.emailAddress,
             validation: (value) {
-              if (value.isEmpty) {
-                return ' email address is required';
-              }
               if (value.isEmpty) {
                 return ' email address is required';
               }
@@ -66,7 +63,7 @@ class _RegisterInputWidgetState extends State<RegisterInputWidget> {
             controller: widget.c3,
             hint: 'password',
             isPassword: widget.isPassword,
-            prefixIcon: Icon(IconBroken.Password),
+            prefixIcon: const Icon(IconBroken.Password),
             suffixPressed: () {
               setState(() {
                 widget.isPassword = !widget.isPassword;
@@ -81,7 +78,7 @@ class _RegisterInputWidgetState extends State<RegisterInputWidget> {
               AppStrings().passwordPattern;
               RegExp regex = RegExp(AppStrings().passwordPattern);
               if (!regex.hasMatch(value)) {
-                AppStrings().passwordReturn;
+                return AppStrings().passwordReturn;
               }
             },
           ),

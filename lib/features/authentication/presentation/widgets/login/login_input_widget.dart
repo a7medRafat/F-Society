@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fsociety/core/utiles/app_colors.dart';
-import 'package:fsociety/core/utiles/sizes.dart';
 import 'package:fsociety/core/utiles/strings.dart';
 import '../../../../../config/style/icons_broken.dart';
 import '../../../../../core/utiles/text_field.dart';
@@ -43,14 +41,15 @@ class _LoginInputWidgetState extends State<LoginInputWidget> {
               }
               String pattern = r'\w+@\w+\.\w+';
               RegExp regex = RegExp(pattern);
-              if (!regex.hasMatch(value))
+              if (!regex.hasMatch(value)) {
                 return 'Invalid E-mail Address format.';
+              }
             },
           ),
           DefaultField(
             controller: widget.controller2,
             hint: 'password',
-            prefixIcon: Icon(IconBroken.Lock),
+            prefixIcon: const Icon(IconBroken.Lock),
             suffixIcon:  widget.isPassword? IconBroken.Show : IconBroken.Hide ,
             suffixPressed: (){
               setState(() {

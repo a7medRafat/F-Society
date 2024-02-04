@@ -5,10 +5,7 @@ abstract class LoginState extends Equatable {
   List<Object> get props => [];
 }
 
-class LoginInitial extends LoginState {
-  @override
-  List<Object> get props => [];
-}
+class LoginInitial extends LoginState {}
 
 class LoginLoadingState extends LoginState {}
 
@@ -32,8 +29,23 @@ class LoginSuccessState extends LoginState {
 
 }
 
-class LogoutSuccessState extends LoginState {
-  @override
-  List<Object> get props => [];
+class LogoutSuccessState extends LoginState {}
+
+class GoogleSigningLoadingState extends LoginState {}
+class GoogleSigningSuccessState extends LoginState {
+  final String googleMsg;
+
+  GoogleSigningSuccessState({required this.googleMsg});
 
 }
+class GoogleSigningErrorState extends LoginState {}
+
+
+class FaceBookSigningLoadingState extends LoginState {}
+class FaceBookSigningSuccessState extends LoginState {
+  final String facebookMsg;
+
+  FaceBookSigningSuccessState({required this.facebookMsg});
+
+}
+class FaceBookSigningErrorState extends LoginState {}

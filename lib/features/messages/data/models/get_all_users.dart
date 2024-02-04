@@ -1,13 +1,18 @@
-class GetAllUsersModel {
-  String? name;
-  String? email;
-  String? phone;
-  String? uid;
-  String? image;
-  String? bio;
-  bool? isEmailVerified;
+import 'package:hive/hive.dart';
+part 'get_all_users.g.dart';
 
-  GetAllUsersModel({
+@HiveType(typeId: 2)
+class AllUsersModel extends HiveObject {
+
+  @HiveField(0) String? name;
+  @HiveField(1) String? email;
+  @HiveField(2) String? phone;
+  @HiveField(3) String? uid;
+  @HiveField(4) String? image;
+  @HiveField(5) String? bio;
+  @HiveField(6) bool? isEmailVerified;
+
+  AllUsersModel({
     required this.name,
     required this.email,
     required this.phone,
@@ -17,7 +22,7 @@ class GetAllUsersModel {
     required this.bio,
   });
 
-  GetAllUsersModel.fromJson(Map<String, dynamic> json) {
+  AllUsersModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     email = json['email'];
     phone = json['phone'];

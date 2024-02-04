@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../../config/style/icons_broken.dart';
-import '../../../../../core/utiles/app_colors.dart';
+import '../../../../../config/style/app_colors.dart';
 import '../../../../../core/utiles/custom_btn.dart';
 
 class MessageDetailFooter extends StatefulWidget {
-  MessageDetailFooter(
+  const MessageDetailFooter(
       {super.key, this.sendMessage, required this.messageController});
 
   final TextEditingController messageController;

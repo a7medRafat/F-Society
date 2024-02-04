@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fsociety/core/utiles/safe_tab.dart';
-import '../../../../../core/utiles/app_colors.dart';
+import '../../../../../config/style/app_colors.dart';
 
 class PostFooterWidget extends StatelessWidget {
   final BuildContext context;

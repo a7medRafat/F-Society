@@ -15,8 +15,11 @@ class GetAllUsersLoadingState extends MessagesState{
   List<Object?> get props => [];
 }
 class GetAllUsersSuccessState extends MessagesState{
+  final List<AllUsersModel> users;
+
+  const GetAllUsersSuccessState({required this.users});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [users];
 }
 class GetAllUsersErrorState extends MessagesState{
   @override
@@ -42,6 +45,14 @@ class GetMessagesLoadingState extends MessagesState{
   List<Object?> get props => [];
 }
 class GetMessagesSuccessState extends MessagesState{
+
+  final List<MessageModel> list;
+
+  const GetMessagesSuccessState({required this.list});
+  @override
+  List<Object?> get props => list;
+}
+class GetMessagesErrorState extends MessagesState{
   @override
   List<Object?> get props => [];
 }

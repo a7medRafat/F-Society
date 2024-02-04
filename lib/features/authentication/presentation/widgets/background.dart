@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'package:fsociety/core/utiles/app_colors.dart';
+import 'package:fsociety/config/style/app_colors.dart';
 
 class Background extends StatelessWidget {
   const Background({Key? key, required this.child}) : super(key: key);

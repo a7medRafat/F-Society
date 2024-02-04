@@ -1,11 +1,11 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fsociety/core/errors/failures.dart';
 import 'package:fsociety/features/profile/domain/repositories/profile_repository.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../layout/data/datasources/remote/feeds_remote_data_source.dart';
+import '../../../usersprofile/data/models/following_model.dart';
 import '../datasources/remote/profile_remote_data_source.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
@@ -13,10 +13,9 @@ class ProfileRepositoryImpl extends ProfileRepository {
   final FeedsRemoteDataSource feedsRemoteDataSource;
   final NetworkInfo networkInfo;
 
-  ProfileRepositoryImpl(
-      {required this.remoteDataSource,
-      required this.networkInfo,
-      required this.feedsRemoteDataSource});
+  ProfileRepositoryImpl({required this.remoteDataSource,
+    required this.networkInfo,
+    required this.feedsRemoteDataSource});
 
   @override
   Future<Either<Failure, Unit>> updateUser(
@@ -34,20 +33,19 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, String>> uploadProfileImg(
-      {required File file}) async {
+  Future<Either<Failure, String>> uploadProfileImg({required File file}) async {
     if (await networkInfo.isConnected) {
       try {
         final response = await remoteDataSource.uploadProfileImg(file: file);
         final downLoadUrl = await response.ref.getDownloadURL();
         return right(downLoadUrl);
       } on FirebaseException catch (e) {
-        if(e.code == 'object-not-found'){
-        }
+        if (e.code == 'object-not-found') {}
         return left(ServerFailure());
       }
     } else {
       return left(ServerFailure());
     }
   }
+
 }

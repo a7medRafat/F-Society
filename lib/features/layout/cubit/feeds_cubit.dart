@@ -1,8 +1,11 @@
 // ignore: depend_on_referenced_packages
+import 'package:fsociety/core/failures_message/failures_messages.dart';
 import 'package:fsociety/core/local_storage/hive_keys.dart';
 import 'package:fsociety/core/local_storage/user_storage.dart';
+import 'package:fsociety/core/notification/send_fcm.dart';
 import 'package:fsociety/features/layout/domain/usecases/check_saved.dart';
 import 'package:fsociety/features/layout/domain/usecases/delete_post.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +19,12 @@ import 'package:fsociety/features/layout/domain/usecases/save_post.dart';
 import 'package:fsociety/features/layout/domain/usecases/unsave_post.dart';
 import '../../addpost/data/models/post_model.dart';
 import '../../authentication/data/models/current_user_model.dart';
+import '../../favourites/cubit/favourites_cubit.dart';
+import '../../favourites/data/models/notification_model.dart';
 import '../data/models/comment_model.dart';
 import '../domain/usecases/check_like.dart';
 import '../domain/usecases/get_user_data.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 part 'feeds_state.dart';
 
@@ -52,34 +57,45 @@ class FeedsCubit extends Cubit<FeedsState> {
 
   static FeedsCubit get(context) => BlocProvider.of(context);
 
-  void getCurrentUserData() async {
+  final TextEditingController commentController = TextEditingController();
+
+  Future<void> getCurrentUserData() async {
     emit(FeedsLoadingState());
     final failureOrSuccess = await getUserDataUseCase.call();
-    failureOrSuccess.fold((failure) => emit(FeedsErrorState(msg: 'check your internet connection')),
-        (currentUser) {
-          di.sl<UserStorage>().saveData(id: HiveKeys.currentUser, data: currentUser);
+    failureOrSuccess
+        .fold((failure) => emit(FeedsErrorState(msg: failure.getMessage())),
+            (currentUser) {
+      di
+          .sl<UserStorage>()
+          .saveData(id: HiveKeys.currentUser, data: currentUser);
       emit(FeedsSuccessState(currentUser: currentUser));
     });
   }
 
-  CurrentUser? itsUser = di.sl<UserStorage>().getData(id: HiveKeys.currentUser);
-
-
   List<String> postId = [];
   List<int> likes = [];
+  int myLikes = 0;
   List<int> commentsNum = [];
   List<String> colors = [];
   List<Color> commentColors = [];
   List<Color> savedColors = [];
   List<PostModel> posts = [];
-  List<String> myPosts = [];
   List<int> saved = [];
   List<String> postsImage = [];
-  List<String> savedList = [];
 
+  increaseLikes() {
+    myLikes++;
+    emit(MyLikeIncreaseState());
+  }
 
-  
-  void getAllPosts() async {
+  decreaseLikes() {
+    myLikes--;
+    emit(MyLikeDecreaseState());
+  }
+
+  int postsLength = 0;
+
+  Future<void> getAllPosts() async {
     posts = [];
     postId = [];
     colors = [];
@@ -87,118 +103,162 @@ class FeedsCubit extends Cubit<FeedsState> {
     commentsNum = [];
     commentColors = [];
     savedColors = [];
-    myPosts = [];
     saved = [];
     postsImage = [];
-    savedList = [];
+    myLikes = 0;
 
+    if (posts.isEmpty) {
       emit(GetAllPostsLoadingState());
       final failureOrSuccess = await getAllPostsUseCase.call();
       failureOrSuccess.fold((failure) => emit(GetAllPostsErrorState()),
           (success) async {
+        postsLength = success.docs.length;
         for (var postDocs in success.docs) {
-            postDocs.reference.collection('comments').get().then((commentDocs) {
-              postDocs.reference.collection('likes').get().then((likeDocs) {
-                postDocs.reference.collection('saved').get().then((savedDocs) {
-                  if (savedDocs.docs.isEmpty) {
-                    savedColors.add(Colors.white);
-                  } else {
-                    for (var e in savedDocs.docs) {
-                      if (e.id == di.sl<UserStorage>()
-                              .getData(id: HiveKeys.currentUser)!
-                              .uid) {
-                        savedList.add(e.data()['savedPost']);
-                        savedColors.add(Colors.deepPurple);
-                      } else {
-                        savedColors.add(Colors.white);
-                      }
-                    }
-                  }
-                  // my posts
-                  if (postDocs.data()['uid'] ==
-                      di
-                          .sl<UserStorage>()
-                          .getData(id: HiveKeys.currentUser)!
-                          .uid) {
-                    myPosts.add(postDocs.data()['postImage']);
-                  }
-                  // comments color
-                  if (commentDocs.docs.isEmpty) {
-                    commentColors.add(Colors.white);
-                  } else {
-                    for (var e in commentDocs.docs) {
-                      if (e.data()['userId'] ==
-                          di
-                              .sl<UserStorage>()
-                              .getData(id: HiveKeys.currentUser)!
-                              .uid) {
-                        commentColors.add(Colors.amber);
-                      } else {
-                        commentColors.add(Colors.white);
-                      }
-                    }
-                  }
-                  // likes colors
-                  bool found = false;
-                  if (likeDocs.docs.isEmpty) {
-                    colors.add('white');
-                  } else {
-                    for (var element in likeDocs.docs) {
-                      if (di
-                          .sl<UserStorage>()
-                          .getData(id: HiveKeys.currentUser)!
-                          .uid ==
-                          element.id) {
-                        colors.add('red');
-                        found = true;
-                      }
-                      if (found == true) {
-                        break;
-                      }
-                    }
-                    if (found == false) {
-                      colors.add('grey');
-                    }
-                  }
+          final commentDocs =
+              await postDocs.reference.collection('comments').get();
+          final likesDocs = await postDocs.reference.collection('likes').get();
+          final savedDocs = await postDocs.reference.collection('saved').get();
 
-                  //// lists ////
-                  saved.add(savedDocs.docs.length);
-                  likes.add(likeDocs.docs.length);
-                  commentsNum.add(commentDocs.docs.length);
-                  postId.add(postDocs.id);
-                  postsImage.add(postDocs.data()['postImage']);
-                  posts.add(PostModel.fromJson(postDocs.data()));
-                  if (success.docs.length == posts.length) {
-                    Future.delayed(const Duration(seconds: 3));
-                    emit(GetAllPostsSuccessState());
-                  }
-                }).catchError((error){
-                  print(error.toString());
-                });
-              });
-            });
+          bool savedFound = false;
+          if (savedDocs.docs.isEmpty) {
+            savedColors.add(Colors.white);
+          } else {
+            for (var e in savedDocs.docs) {
+              if (e.id ==
+                  di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid) {
+                savedColors.add(Colors.deepPurple);
+                savedFound = true;
+              }
+              if (savedFound == true) {
+                break;
+              }
+            }
+            if (savedFound == false) {
+              savedColors.add(Colors.white);
+            }
+          }
 
+          //// my posts ////
+          // if (postDocs.data()['uid'] ==
+          //     di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid) {
+          //   myLikes += likesDocs.docs.length;
+          // }
+
+          //// comments color ////
+          bool commentFound = false;
+          if (commentDocs.docs.isEmpty) {
+            commentColors.add(Colors.white);
+          } else {
+            for (var e in commentDocs.docs) {
+              if (e.data()['userId'] ==
+                  di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid) {
+                commentColors.add(Colors.amber);
+                commentFound = true;
+              }
+              if (commentFound == true) {
+                break;
+              }
+            }
+            if (commentFound == false) {
+              commentColors.add(Colors.white);
+            }
+          }
+
+          bool found = false;
+          if (likesDocs.docs.isEmpty) {
+            colors.add('white');
+          } else {
+            for (var e in likesDocs.docs) {
+              if (di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid ==
+                  e.id) {
+                colors.add('red');
+                found = true;
+              }
+              if (found == true) {
+                break;
+              }
+            }
+            if (found == false) {
+              colors.add('grey');
+            }
+          }
+
+          //// lists ////
+
+          likes.add(likesDocs.docs.length);
+          saved.add(savedDocs.docs.length);
+          commentsNum.add(commentDocs.docs.length);
+          postId.add(postDocs.id);
+          postsImage.add(postDocs.data()['postImage']);
+          posts.add(PostModel.fromJson(postDocs.data()));
+          if (success.docs.length == posts.length) {
+            emit(GetAllPostsSuccessState());
+          }
         }
       });
+    }
   }
 
+  //// post like ////
   void postLike(String postId, int index) async {
+    likes[index]++;
+    colors[index] = 'red';
     emit(PostLikeLoadingState());
     final failureOrSuccess = await postLikeUseCase.call(postId);
-    failureOrSuccess.fold((failure) => emit(PostLikeErrorState()), (success) {
-      likes[index]++;
-      colors[index] = 'red';
+    failureOrSuccess.fold((failure) {
+      likes[index]--;
+      colors[index] = 'white';
+      emit(PostLikeErrorState(error: failureMessage(failure)));
+    }, (success) {
+      NotificationModel notificationModel = NotificationModel(
+        title: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.name,
+        body: 'liked your post',
+        bio: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.bio,
+        senderUid: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid,
+        image: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.image,
+        receiverUid: posts[index].uid!,
+        postId: postId,
+        type: 'like',
+        fcmToken: posts[index].deviceToken!,
+      );
+      if (posts[index].uid! !=
+          di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid!) {
+        Api().sendFcm(
+            title:
+                di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.name!,
+            body: 'liked your post',
+            fcmToken: posts[index].deviceToken!,
+            type: 'follow',
+            uid: posts[index].uid!);
+        di.sl<FavouritesCubit>().addNotificationToFb(
+            uid: posts[index].uid!, notificationModel: notificationModel);
+      }
+
+      if (posts[index].uid ==
+          di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid) {
+        increaseLikes();
+      }
       emit(PostLikeSuccessState());
     });
   }
 
   void disLike(String postId, int index) async {
     emit(PostDisLikeLoadingState());
+    likes[index]--;
+    colors[index] = 'white';
     final failureOrSuccess = await disLikeUseCase.call(postId);
-    failureOrSuccess.fold((failure) => emit(PostDisLikeErrorState()),
-        (success) {
-      likes[index]--;
-      colors[index] = 'white';
+    failureOrSuccess.fold((failure) {
+      likes[index]++;
+      colors[index] = 'red';
+      emit(PostDisLikeErrorState());
+    }, (success) {
+      di
+          .sl<FavouritesCubit>()
+          .deleteLikeNotificationFromFb(uid: posts[index].uid!, postId: postId);
+      if (posts[index].uid ==
+          di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid) {
+        decreaseLikes();
+      }
       emit(PostDisLikeSuccessState());
     });
   }
@@ -215,21 +275,44 @@ class FeedsCubit extends Cubit<FeedsState> {
     });
   }
 
+  //// post comment ////
   void addComment(
-      {required String comment, required String postId, index}) async {
+      {required String comment,
+      required String postId,
+      required int index}) async {
     emit(AddCommentLoadingState());
     CommentModel commentModel = CommentModel(
         comment,
-        itsUser!.image,
-        itsUser!.uid,
-        itsUser!.name,
+        di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.image,
+        di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid,
+        di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.name,
         DateFormat('kk:mm:a').format(DateTime.now()).toString());
+    NotificationModel notificationModel = NotificationModel(
+        title: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.name,
+        body: 'commented on your post',
+        bio: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.bio,
+        senderUid: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.uid,
+        image: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.image,
+        receiverUid: posts[index].uid!,
+        postId: postId,
+        type: 'comment',
+        fcmToken: posts[index].deviceToken!);
     final failureOrAddComment =
         await addCommentUseCase.call(postId, commentModel);
     failureOrAddComment.fold((failure) => emit(AddCommentErrorState()),
         (success) {
       commentsNum[index]++;
       commentColors[index] = Colors.amber;
+
+      Api().sendFcm(
+          title: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.name!,
+          body: 'commented on your post',
+          fcmToken: posts[index].deviceToken!,
+          type: 'follow',
+          uid: posts[index].uid!);
+
+      di.sl<FavouritesCubit>().addNotificationToFb(
+          uid: posts[index].uid!, notificationModel: notificationModel);
       emit(AddCommentSuccessState());
     });
   }
@@ -248,6 +331,7 @@ class FeedsCubit extends Cubit<FeedsState> {
     });
   }
 
+  //// delete post ////
   void deletePost(String postId) async {
     emit(DeletePostLoadingState());
     final failureOrDelete = await deletePostUseCase.call(postId);
@@ -257,6 +341,7 @@ class FeedsCubit extends Cubit<FeedsState> {
     });
   }
 
+  //// save post ////
   void savePost(String postId, int index, String postImg) async {
     final failureOrSuccess = await savePostUseCase.call(postId, postImg);
     failureOrSuccess.fold((failure) => emit(SavePostErrorState()), (success) {
@@ -283,14 +368,10 @@ class FeedsCubit extends Cubit<FeedsState> {
       if (success.data() == null) {
         savePost(id, index, postsImage[index]);
         // listSaved.add(postsImage[index]);
-
       } else {
         unSavePost(id, index);
       }
       emit(PostCheckSavedSuccessState());
     });
   }
-
-
-
 }

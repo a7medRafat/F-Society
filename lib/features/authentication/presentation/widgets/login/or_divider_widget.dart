@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../core/utiles/app_colors.dart';
+import '../../../../../config/style/app_colors.dart';
 
 class OrDivider extends StatelessWidget {
   const OrDivider({super.key});

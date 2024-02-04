@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import '../../local_storage/hive_keys.dart';
 import '../../local_storage/user_storage.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 abstract class FStorage {
   Future<void> updateUser({required Map<String, dynamic> map});

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fsociety/core/utiles/app_colors.dart';
+import 'package:fsociety/config/style/app_colors.dart';
 import 'package:fsociety/core/utiles/sizes.dart';
 
 class DefaultField extends StatelessWidget {
@@ -45,9 +45,9 @@ class DefaultField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextFormField(
-        onChanged: onChanged,
+        onChanged:onChanged,
         keyboardType: textInputType,
         validator: validation,
         obscureText: isPassword,

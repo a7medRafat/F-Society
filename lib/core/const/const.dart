@@ -1,4 +1,6 @@
 String? uid;
+String? token;
+
 
 
 

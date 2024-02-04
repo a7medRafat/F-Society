@@ -15,7 +15,7 @@ class EditeInputWidget extends StatelessWidget {
     return Form(
       key: profileK,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             DefaultField(

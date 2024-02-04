@@ -3,7 +3,7 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:fsociety/features/layout/cubit/feeds_cubit.dart';
 import '../../config/style/icons_broken.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class FocusedMenu {
   Widget focused(context, index) => FocusedMenuHolder(
@@ -12,7 +12,7 @@ class FocusedMenu {
         menuBoxDecoration: const BoxDecoration(
             color: Colors.grey,
             borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        duration: const Duration(milliseconds: 5),
+        duration: const Duration(milliseconds: 2),
         animateMenuItems: true,
         openWithTap: true,
         blurSize: 3.0,

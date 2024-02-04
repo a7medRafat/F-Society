@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class SafeOnTap extends StatefulWidget {
-  SafeOnTap({
+  const SafeOnTap({
     Key? key,
     required this.child,
     required this.onSafeTap,

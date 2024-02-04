@@ -1,22 +1,24 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyDialog {
-  Future<dynamic> show(context , final fun) => showDialog(
+  Future<dynamic> show(context, final fun) => showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text("Sign out" , style: TextStyle(color: Colors.red,fontSize: 18)),
-          content: const Text("are you really want to sign out ? " , style: TextStyle(color: Colors.black87,fontSize: 13)),
+          backgroundColor: Colors.white,
+          title: const Text(
+              "Log Out",
+              style: TextStyle(color: Colors.red, fontSize: 18)),
+          content:  Text("are you really want to Log Out ? ",
+              style: Theme.of(context).textTheme.titleSmall),
           actions: <Widget>[
             TextButton(
               onPressed: fun,
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white38,
-                  borderRadius: BorderRadius.circular(20)
-                ),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10)),
                 padding: const EdgeInsets.all(14),
-                child: const Text("yeah"),
+                child: const Text("Yes",style: TextStyle(color: Colors.redAccent),),
               ),
             ),
           ],

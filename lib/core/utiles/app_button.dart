@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../../core/utiles/app_colors.dart';
+import '../../config/style/app_colors.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
   final fun;
+  final Color? btnColor;
 
-   AppButton({super.key, required this.text,required this.fun});
+   AppButton({super.key, required this.text,required this.fun,this.btnColor});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class AppButton extends StatelessWidget {
                 child: Container(
                   height: size.width * 0.15,
                   decoration: BoxDecoration(
-                      color: AppColors().rectangle4,
+                      color:btnColor?? AppColors().rectangle4,
                       borderRadius: BorderRadius.circular(20)),
                   child: Center(
                     child: Text(

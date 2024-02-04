@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fsociety/core/utiles/loading_widget.dart';
 import 'package:fsociety/features/stories/cubit/story_cubit.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class ShareStoryBtn extends StatefulWidget {
    ShareStoryBtn({

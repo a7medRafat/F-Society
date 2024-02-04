@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fsociety/core/utiles/app_colors.dart';
+import 'package:fsociety/config/style/app_colors.dart';
 import 'package:fsociety/core/utiles/focused_menue.dart';
 
 class PostHeaderWidget extends StatelessWidget {

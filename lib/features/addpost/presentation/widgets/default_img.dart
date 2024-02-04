@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fsociety/config/style/icons_broken.dart';
-import '../../../../core/utiles/app_colors.dart';
+import '../../../../config/style/app_colors.dart';
 import '../../cubit/create_post_cubit.dart';
 
 class dafaultImg extends StatefulWidget {

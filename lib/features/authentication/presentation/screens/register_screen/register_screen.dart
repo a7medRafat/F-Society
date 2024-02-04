@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fsociety/core/navigation/navigation.dart';
@@ -11,7 +10,7 @@ import 'package:fsociety/features/authentication/presentation/screens/login_scre
 import '../../../../../core/mysnackbar/mysnackbar.dart';
 import '../../widgets/background.dart';
 import '../../widgets/register/register_input_widget.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({
@@ -31,7 +30,7 @@ class RegisterScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: CustomScrollView(
             slivers: [
               SliverFillRemaining(
@@ -51,41 +50,38 @@ class RegisterScreen extends StatelessWidget {
                       c4: phoneController,
                       fKey: formKey,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     BlocConsumer<RegisterCubit, RegisterState>(
-                      listener: (context, state) {},
+                      listener: (context, state) {
+                        if (state is RegisterSuccessState) {
+                          MySnackBar()
+                              .snackBarMessage(context, state.successMsg);
+                          Future.delayed(const Duration(seconds: 1)).then(
+                              (value) => Navigation()
+                                  .navigateAndFinish(context, LoginScreen()));
+                        }
+                        if (state is RegisterErrorState) {
+                          MySnackBar().snackBarMessage(context, state.msg);
+                        }
+                      },
                       builder: (context, state) {
-                        return BlocConsumer<RegisterCubit, RegisterState>(
-                          listener: (context, state) {
-                            if (state is RegisterErrorState) {
-                              MySnackBar().snackBarMessage(context, state.msg);
-                            } else if (state is RegisterSuccessState) {
-                              MySnackBar()
-                                  .snackBarMessage(context, state.successMsg);
-                              Navigation()
-                                  .navigateAndFinish(context, LoginScreen());
-                            }
-                          },
-                          builder: (context, state) {
-                            if (state is RegisterLoadingState) {
-                              return LoadingWidget();
-                            }
-                            return AppButton(
-                                text: 'Register',
-                                fun: () {
-                                  if (formKey.currentState!.validate()) {
-                                    RegisterBody register = RegisterBody(
-                                        name: nameController.text,
-                                        email: emailController.text,
-                                        phone: phoneController.text,
-                                        password: passwordController.text
-                                    );
-                                    di.sl<RegisterCubit>()
-                                        .usrRegister(registerBody: register);
-                                  }
-                                });
-                          },
-                        );
+                        if (state is RegisterLoadingState) {
+                          return const LoadingWidget();
+                        }
+                        return AppButton(
+                            text: 'Register',
+                            fun: () {
+                              if (formKey.currentState!.validate()) {
+                                RegisterBody register = RegisterBody(
+                                    name: nameController.text,
+                                    email: emailController.text,
+                                    phone: phoneController.text,
+                                    password: passwordController.text);
+                                di
+                                    .sl<RegisterCubit>()
+                                    .usrRegister(registerBody: register);
+                              }
+                            });
                       },
                     )
                   ],

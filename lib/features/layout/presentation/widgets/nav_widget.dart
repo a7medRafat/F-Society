@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fsociety/config/style/icons_broken.dart';
 import 'package:fsociety/core/navigation/navigation.dart';
-import 'package:fsociety/core/utiles/app_colors.dart';
-import 'package:fsociety/core/utiles/loading_widget.dart';
+import 'package:fsociety/config/style/app_colors.dart';
 import 'package:fsociety/features/addpost/presentation/scereens/add_post.dart';
 import 'package:fsociety/features/layout/cubit/feeds_cubit.dart';
-import 'package:fsociety/features/messages/cubit/messages_cubit.dart';
 import 'package:fsociety/features/profile/presentation/screens/profile.dart';
 import '../../../../core/local_storage/hive_keys.dart';
 import '../../../../core/local_storage/user_storage.dart';
 import '../../../../core/utiles/custom_btn.dart';
+import '../../../../core/utiles/loading_widget.dart';
 import '../../../favourites/presentation/screens/fav.dart';
 import '../screens/feeds_screen.dart';
 import '../../../messages/presentation/screens/messages.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/app/injuctoin_container.dart' as di;
 
 class Nav extends StatefulWidget {
   const Nav({super.key});
@@ -25,7 +24,7 @@ class Nav extends StatefulWidget {
 
 class _NavState extends State<Nav> {
   int _selectedIndex = 0;
-  final pages = [FeedsScreen(), Messages(), Favourite()];
+  final pages = [const FeedsScreen(), Messages(),  FavouritesScreen()];
 
   void _changePageTo(int index) {
     setState(() => _selectedIndex = index);
@@ -49,7 +48,7 @@ class _NavState extends State<Nav> {
                 color: AppColors().mainColor,
               ),
               onTap: () {
-                Navigation().navigateTo(context, AddPostScreen());
+                Navigation().navigateTo(context, const AddPostScreen());
               },
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -89,7 +88,6 @@ class _NavState extends State<Nav> {
                           )),
                       GestureDetector(
                         onTap: () {
-                          MessagesCubit.get(context).getAllUsers();
                           Navigation().navigateTo(context, Messages());
                         },
                         child: Icon(
@@ -99,9 +97,9 @@ class _NavState extends State<Nav> {
                               : AppColors().fBlack,
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       GestureDetector(
-                          onTap: () => _changePageTo(2),
+                          onTap: () => Navigation().navigateTo(context,  FavouritesScreen()),
                           child: Icon(
                             IconBroken.Heart,
                             color: _selectedIndex == 2
@@ -112,19 +110,21 @@ class _NavState extends State<Nav> {
                           onTap: () {
                             Navigation().navigateTo(context, const Profile());
                           },
-                          child: di.sl<UserStorage>().getData(id: HiveKeys.currentUser)!.image != null
+                          child: di.sl<UserStorage>()
+                                      .getData(id: HiveKeys.currentUser)!
+                                      .image !=
+                                  null
                               ? CircleAvatar(
                                   backgroundColor: Colors.black87,
                                   radius: 15,
                                   child: CircleAvatar(
                                     radius: 14,
-                                    backgroundImage: NetworkImage(di
-                                        .sl<UserStorage>()
+                                    backgroundImage: NetworkImage(di.sl<UserStorage>()
                                         .getData(id: HiveKeys.currentUser)!
                                         .image!),
                                   ),
                                 )
-                              : SizedBox(child: LoadingWidget()))
+                              : const SizedBox(child: LoadingWidget()))
                     ],
                   ),
                 );

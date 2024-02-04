@@ -12,6 +12,7 @@ class CurrentUser extends HiveObject{
   @HiveField(5) String? image;
   @HiveField(6) String? bio;
   @HiveField(7) bool? isEmailVerified;
+  @HiveField(8) String? deviceToken;
 
   CurrentUser({
     required this.name,
@@ -22,6 +23,7 @@ class CurrentUser extends HiveObject{
     required this.isEmailVerified,
     required this.image,
     required this.bio,
+    required this.deviceToken,
   });
 
   CurrentUser.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class CurrentUser extends HiveObject{
     image = json['image'];
     bio = json['bio'];
     isEmailVerified = json['isEmailVerified'];
+    deviceToken = json['deviceToken'];
   }
 
   Map<String, dynamic> toJson() {
@@ -44,7 +47,8 @@ class CurrentUser extends HiveObject{
       'uid': uid,
       'isEmailVerified' : isEmailVerified,
       'image': image,
-      'bio' : bio
+      'bio' : bio,
+      'deviceToken' : deviceToken,
     };
   }
 }

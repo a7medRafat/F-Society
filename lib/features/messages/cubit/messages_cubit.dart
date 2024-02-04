@@ -1,96 +1,73 @@
-import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fsociety/features/layout/cubit/feeds_cubit.dart';
+import 'package:fsociety/core/collections/collections.dart';
 import 'package:fsociety/features/messages/data/models/get_all_users.dart';
+import 'package:fsociety/features/messages/data/models/last_message_model.dart';
 import 'package:fsociety/features/messages/data/models/message_model.dart';
-import 'package:fsociety/injuctoin_container.dart' as di;
+import 'package:fsociety/features/messages/domain/usecases/get_messages.dart';
+import 'package:fsociety/app/injuctoin_container.dart' as di;
+import '../domain/usecases/get_all_users.dart';
+import '../domain/usecases/send_message.dart';
 part 'messages_state.dart';
 
 class MessagesCubit extends Cubit<MessagesState> {
-  MessagesCubit() : super(MessagesInitial());
+  final GetAllUsersUseCase getAllUsersUseCase;
+  final SendMessageUseCase sendMessageUseCase;
+  final GetMessagesUseCase getMessagesUseCase;
+
+  MessagesCubit({
+    required this.getAllUsersUseCase,
+    required this.sendMessageUseCase,
+    required this.getMessagesUseCase,
+  }) : super(MessagesInitial());
 
   static MessagesCubit get(context) => BlocProvider.of(context);
 
-  GetAllUsersModel? allUsersModel;
-  List<GetAllUsersModel> users = [];
+  TextEditingController? searchController = TextEditingController();
 
-  void getAllUsers() {
-    if (users.isEmpty) {
+  List<AllUsersModel> allUsers = [];
+
+  void getUsers() async {
+    if (allUsers.isEmpty) {
       emit(GetAllUsersLoadingState());
-
-      FirebaseFirestore.instance.collection('users').get().then((value) {
-        value.docs.forEach((element) {
-          if(element.data()['uid'] != di.sl<FeedsCubit>().itsUser!.uid){
-            users.add(GetAllUsersModel.fromJson(element.data()));
-          }
-        });
-        print('users==> ${users.length}');
-        emit(GetAllUsersSuccessState());
-      }).catchError((error) {
-        print(error.toString());
-        emit(GetAllUsersErrorState());
+      final failureOrSuccess = await getAllUsersUseCase.call();
+      failureOrSuccess.fold((failure) => emit(GetAllUsersErrorState()),
+          (success) {
+        allUsers = success;
+        emit(GetAllUsersSuccessState(users: success));
       });
     }
   }
 
-  Future<void> sendMessage(
-      {required String receiverId,
-      required String dateTime,
-      required String content}) async {
-    emit(SendMessageLoadingState());
-    MessageModel messageModel = MessageModel(
-        dateTime: dateTime,
-        senderId: di.sl<FeedsCubit>().itsUser!.name,
-        receiverId: receiverId,
-        content: content);
-
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(di.sl<FeedsCubit>().itsUser!.uid)
-        .collection('chats')
-        .doc(receiverId)
-        .collection('messages')
-        .add(messageModel.toJson())
-        .then((value) {
-      emit(SendMessageSuccessState());
-    }).catchError((error) {
-      emit(SendMessageErrorState());
-    });
-
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(receiverId)
-        .collection('chats')
-        .doc(di.sl<FeedsCubit>().itsUser!.uid)
-        .collection('messages')
-        .add(messageModel.toJson())
-        .then((value) {
-      emit(SendMessageSuccessState());
-    }).catchError((error) {
-      emit(SendMessageErrorState());
-    });
+  void sendMessage({
+    required String receiverId,
+    required String content,
+    required LastMsgModel lastMsgModel,
+  }) async {
+    final failureOrMessage =
+        await sendMessageUseCase.call(receiverId, content, lastMsgModel);
+    failureOrMessage.fold((failure) => emit(SendMessageErrorState()),
+        (message) => emit(SendMessageSuccessState()));
   }
 
-  List<MessageModel> messages = [];
+
+
 
   Future<void> getMessages({required String receiverId}) async {
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(di.sl<FeedsCubit>().itsUser!.uid)
-        .collection('chats')
+     Collections()
+        .chatCol
         .doc(receiverId)
         .collection('messages')
         .orderBy('dateTime')
         .snapshots()
         .listen((event) {
-      messages = [];
-      event.docs.forEach((element) {
-        messages.add(MessageModel.fromJson(element.data()));
-      });
-      emit(GetMessagesSuccessState());
+       List<MessageModel> messages = [];
+        for (var e in event.docs) {
+          messages.add(MessageModel.fromJson(e.data()));
+        }
+      emit(GetMessagesSuccessState(list: messages));
     });
   }
 }

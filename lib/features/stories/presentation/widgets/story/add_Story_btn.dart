@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fsociety/core/navigation/navigation.dart';
 import 'package:fsociety/features/stories/cubit/story_cubit.dart';
 import 'package:fsociety/features/stories/presentation/screens/story_screen.dart';
-import '../../../../../core/utiles/app_colors.dart';
-import 'package:fsociety/injuctoin_container.dart'as di;
+import '../../../../../config/style/app_colors.dart';
+import 'package:fsociety/app/injuctoin_container.dart'as di;
 
 class AddStoryButton extends StatelessWidget {
 
